@@ -1,6 +1,22 @@
 # Risecommerce SearchSanitizer Extension  
 
-The [Risecommerce Risecommerce SearchSanitizer Extension for Magento 2](https://risecommerce.com/store/magento2-searchsanitizer.html) by Risecommerce is  SearchSanitizer gives you full control over Magento 2 search. Block unwanted terms, clean spammy queries, and optimize your database for faster performance. Deliver accurate, relevant results to customers, enhance user experience, and keep your store search clean, smart, and conversion-friendly..  
+**Overview**
+Risecommerce Search Sanitizer helps secure your Magento store by preventing harmful or unwanted search terms from being saved. It blocks SQL keywords, HTML/JS code, and any custom patterns you define. Instead of saving unsafe terms, customers see a warning message on the search page.
+
+**Features**
+
+1. **Enable/Disable Control** – Turn the sanitizer on or off from Admin.
+2. **Custom Ignore List** – Define comma-separated words or patterns that you want to block (e.g., `select,drop,delete,script`).
+3. **Custom Warning Message** – Show a user-friendly message when blocked terms are entered.
+4. **Admin Configuration** – Manage all settings from Stores → Configuration → Risecommerce → Search Sanitizer.
+5. **Improved Security** – Stops malicious inputs from being stored in search query logs.
+
+**Use Case**
+
+* Protects your database from SQL injections attempted via search.
+* Prevents saving of unwanted spam keywords or HTML.
+* Gives customers a clear warning instead of a technical error.
+
 
 For more details about the extension, visit the [Risecommerce SearchSanitizer Extension for Magento 2](https://risecommerce.com/store/magento2-searchsanitizer.html).
 

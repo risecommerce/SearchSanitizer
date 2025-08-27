@@ -17,27 +17,42 @@
  * @license     https://www.risecommerce.com/LICENSE.txt
  */
 namespace Risecommerce\SearchSanitizer\Plugin;
-
 use Magento\Search\Model\Query;
 use Magento\Framework\Message\ManagerInterface;
+use Risecommerce\SearchSanitizer\Helper\Data as ConfigHelper;
 
 class ValidateSearchSanitizer
 {
-    /**
+     /**
      * @var ManagerInterface
      */
-    private $messageManager;
+        private $messageManager;
 
-    public function __construct(ManagerInterface $messageManager)
-    {
+     /**
+     * @var ConfigHelper
+     */
+
+    private $configHelper;
+
+    public function __construct(
+        ManagerInterface $messageManager,
+        ConfigHelper $configHelper
+    ) {
         $this->messageManager = $messageManager;
+        $this->configHelper   = $configHelper;
     }
 
     public function aroundSaveIncrementalPopularity(Query $subject, callable $proceed)
     {
+        if (!$this->configHelper->isEnabled()) {
+            return $proceed();
+        }
+
         if ($this->isMalicious($subject->getQueryText())) {
-            $this->messageManager->addWarningMessage(__('❌ This search term is not allowed.'));
-            return $subject; 
+            $message = $this->configHelper->getWarningMessage() ?: __('This search term is not allowed.');
+            $this->messageManager->addWarningMessage(__($message));
+            // stop saving but return as the original method would
+            return $subject;
         }
 
         return $proceed();
@@ -45,8 +60,13 @@ class ValidateSearchSanitizer
 
     public function aroundSaveNumResults(Query $subject, callable $proceed, $numResults)
     {
+        if (!$this->configHelper->isEnabled()) {
+            return $proceed($numResults);
+        }
+
         if ($this->isMalicious($subject->getQueryText())) {
-            $this->messageManager->addWarningMessage(__('❌ This search term is not allowed.'));
+            $message = $this->configHelper->getWarningMessage() ?: __('This search term is not allowed.');
+            $this->messageManager->addWarningMessage(__($message));
             return $subject;
         }
 
@@ -55,18 +75,22 @@ class ValidateSearchSanitizer
 
     private function isMalicious($text)
     {
-        $sqlPatterns = ['select', 'insert', 'update', 'delete', 'drop', 'union', 'into', 'where', 'www', '.co.uk' , '.com' ,'.io', '.ai'];
-        foreach ($sqlPatterns as $pattern) {
-            if (stripos($text, $pattern) !== false) {
+        if ($text === null) {
+            return false;
+        }
+
+        // patterns from admin config
+        foreach ($this->configHelper->getPatterns() as $pattern) {
+            if ($pattern && stripos($text, $pattern) !== false) {
                 return true;
             }
         }
 
-        if ($text !== strip_tags($text)) {
+        if ($this->configHelper->blockHtml() && $text !== strip_tags($text)) {
             return true;
         }
 
-        if (filter_var($text, FILTER_VALIDATE_URL)) {
+        if ($this->configHelper->blockUrls() && filter_var($text, FILTER_VALIDATE_URL)) {
             return true;
         }
 

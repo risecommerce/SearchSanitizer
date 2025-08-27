@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/config.xsd">
+
+    <default>
+        <searchsanitizer>
+            <general>
+                <enabled>1</enabled>
+                <patterns>select,insert,update,delete,drop,union,into,where,www,https,html,.com</patterns>
+                <warning_message>This search term is not allowed.</warning_message>
+                <block_html>1</block_html>
+                <block_urls>1</block_urls>
+            </general>
+        </searchsanitizer>
+    </default>
+</config>
